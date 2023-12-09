@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mobile/pages/login.dart';
-import 'package:mobile/pages/desc_page.dart';
+// import 'package:mobile/pages/desc_page.dart';
+import 'package:mobile/pages/desc_page_tv.dart';
 import 'package:mobile/widget/data.dart';
 import 'package:mobile/widget/category.dart';
 import 'package:mobile/models/movie.dart';
 import 'package:mobile/http_service.dart';
 import 'package:mobile/pages/welcomescreen.dart';
+import 'package:mobile/models/television.dart';
 import 'package:mobile/pages/main_page.dart';
-import 'package:mobile/pages/main_page_tv.dart';
-import 'package:mobile/pages/main_page_movie.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key});
+class PageTelevision extends StatefulWidget {
+  const PageTelevision({Key? key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<PageTelevision> createState() => _PageTelevisionState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _PageTelevisionState extends State<PageTelevision> {
   final _auth = FirebaseAuth.instance;
   final HttpService httpService = HttpService();
-  String searchQuery = '';
+  String searchText = '';
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +75,15 @@ class _MainPageState extends State<MainPage> {
                                   'FilmFlix',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize:
+                                        32, // Sesuaikan ukuran font sesuai keinginan
+                                    fontWeight:
+                                        FontWeight.bold, // Atur ketebalan font
+                                    fontFamily:
+                                        'YourDesiredFont', // Ganti 'YourDesiredFont' dengan nama font yang diinginkan
                                   ),
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign
+                                      .center, // Agar teks berada di tengah
                                 ),
                               ],
                             ),
@@ -124,7 +129,7 @@ class _MainPageState extends State<MainPage> {
                             autofocus: false,
                             onChanged: (value) {
                               setState(() {
-                                searchQuery = value;
+                                searchText = value;
                               });
                             },
                             decoration: InputDecoration(
@@ -145,118 +150,39 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.black],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Row(),
-              ),
               Padding(
                 padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainPageMovie(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                        child: Text(
-                          'Movie',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PageTelevision(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                        child: Text(
-                          'TV Show',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'TV Shows',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Populer',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              FutureBuilder<List<Movie>>(
-                future: httpService.fecthDataPlaces(),
+              FutureBuilder<List<Television>>(
+                future: httpService.fecthDataPlaces1(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
-                    List<Movie> movies = snapshot.data!;
-                    movies = movies
-                        .where((movie) =>
-                            movie.title
+                    List<Television> televisions = snapshot.data!
+                        .where((tv) =>
+                            tv.name
                                 ?.toLowerCase()
-                                .contains(searchQuery.toLowerCase()) ??
+                                .contains(searchText.toLowerCase()) ??
                             false)
                         .toList();
-                    movies.sort((a, b) =>
-                        (b.voteAverage ?? 0).compareTo(a.voteAverage ?? 0));
-                    movies = movies.take(4).toList();
 
                     return ListView.builder(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: movies.length,
+                      itemCount: televisions.length,
                       itemBuilder: (context, index) {
-                        Movie movie = movies[index];
+                        Television television = televisions[index];
                         return Column(
                           children: [
                             InkWell(
@@ -272,7 +198,8 @@ class _MainPageState extends State<MainPage> {
                                     Container(
                                       width: 150,
                                       child: Image.network(
-                                        "https://www.themoviedb.org/t/p/w500${movie.posterPath}",
+                                        "https://www.themoviedb.org/t/p/w500${television.posterPath}" ??
+                                            "",
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -284,7 +211,7 @@ class _MainPageState extends State<MainPage> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              movie.title ?? "",
+                                              television.name ?? "",
                                               style: TextStyle(
                                                 fontSize: 17,
                                                 fontWeight: FontWeight.bold,
@@ -294,21 +221,25 @@ class _MainPageState extends State<MainPage> {
                                             SizedBox(height: 20),
                                             Row(
                                               children: [
+                                                // Icon(Icons.star, color: Colors.amber),
                                                 Text(
-                                                  "Rating: ${movie.voteAverage?.toStringAsFixed(1) ?? ""}",
+                                                  "Rating: ${television.voteAverage?.toStringAsFixed(1) ?? ""}",
                                                 ),
-                                                SizedBox(width: 20),
                                               ],
                                             ),
                                             SizedBox(height: 8),
                                             Text(
-                                              "Language: ${movie.original_language?.toUpperCase() ?? ""}",
+                                              "Language: ${television.original_language?.toUpperCase() ?? ""}",
                                             ),
                                             SizedBox(height: 8),
                                             Text(
-                                              "Release Date: ${movie.ReleaseDate ?? ""}",
+                                              "Country: ${television.originCountry ?? ""}",
                                             ),
-                                            SizedBox(height: 45),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              "First Air Date: ${television.FirstAirDate ?? ""}",
+                                            ),
+                                            SizedBox(height: 25),
                                             Center(
                                               child: ElevatedButton(
                                                 onPressed: () {
@@ -317,7 +248,8 @@ class _MainPageState extends State<MainPage> {
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           DescPage(
-                                                              movie: movie),
+                                                              television:
+                                                                  television),
                                                     ),
                                                   );
                                                 },
@@ -329,9 +261,8 @@ class _MainPageState extends State<MainPage> {
                                                             20.0),
                                                   ),
                                                   padding: EdgeInsets.symmetric(
-                                                    horizontal: 15.0,
-                                                    vertical: 8.0,
-                                                  ),
+                                                      horizontal: 15.0,
+                                                      vertical: 8.0),
                                                 ),
                                                 child: Text(
                                                   'Show Detail',
@@ -364,7 +295,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
-                    bottomNavigationBar: BottomNavigationBar(
+              bottomNavigationBar: BottomNavigationBar(
                 backgroundColor: Colors.white,
                 items: [
                   BottomNavigationBarItem(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "985565572833",
+    "project_id": "flimflix-c11d7",
+    "storage_bucket": "flimflix-c11d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985565572833:android:899b099dc87c5d0dcc11a0",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNwMJ2VdVOZsEIHcIq7FRz4yKNmy7BLPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

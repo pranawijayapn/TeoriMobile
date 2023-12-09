@@ -7,18 +7,17 @@ import 'package:mobile/widget/category.dart';
 import 'package:mobile/models/movie.dart';
 import 'package:mobile/http_service.dart';
 import 'package:mobile/pages/welcomescreen.dart';
-import 'package:mobile/pages/main_page.dart';
-import 'package:mobile/pages/main_page_tv.dart';
-import 'package:mobile/pages/main_page_movie.dart';
+import 'package:mobile/pages/main_page_movie.dart'; // Import MainPageMovie
+import 'package:mobile/pages/main_page_tv.dart'; // Import PageTelevision
 
-class MainPage extends StatefulWidget {
-  const MainPage({Key? key});
+class PageMain extends StatefulWidget {
+  const PageMain ({Key? key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<PageMain> createState() => _PageMainState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _PageMainState extends State<PageMain> {
   final _auth = FirebaseAuth.instance;
   final HttpService httpService = HttpService();
   String searchQuery = '';
@@ -27,6 +26,38 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PageMain()),
+                );
+              },
+              child: Icon(Icons.home),
+            ),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.manage_accounts),
+            label: "Akun",
+          ),
+          BottomNavigationBarItem(
+            icon: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => WelcomeScreen()),
+                );
+              },
+              child: Icon(Icons.logout),
+            ),
+            label: "Logout",
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -57,8 +88,8 @@ class _MainPageState extends State<MainPage> {
                                   width: 45,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
-                                      image:
-                                          AssetImage('assets/images/logo1.jpg'),
+                                      image: NetworkImage(
+                                          'https://th.bing.com/th/id/OIP.XadmtOiEEI6Zv388n5l2dQHaHx?pid=ImgDet&rs=1'),
                                     ),
                                     borderRadius: BorderRadius.circular(25),
                                     border: Border.all(
@@ -72,13 +103,10 @@ class _MainPageState extends State<MainPage> {
                                   width: 10,
                                 ),
                                 Text(
-                                  'FilmFlix',
+                                  'Selamat Datang di FilmFlix',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
@@ -145,91 +173,29 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.blue, Colors.black],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Row(),
-              ),
               Padding(
                 padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainPageMovie(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                        child: Text(
-                          'Movie',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PageTelevision(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.blue,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                        child: Text(
-                          'TV Show',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Populer',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Text(
-                'Populer',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(
-                height: 10,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Category(
+                    imagePath: 'assets/images/romance.png',
+                    title: 'Movies',
+                  ),
+                  Category(
+                    imagePath: 'assets/images/action.png',
+                    title: 'Television',
+                  ),
+                ],
               ),
               FutureBuilder<List<Movie>>(
                 future: httpService.fecthDataPlaces(),
@@ -240,16 +206,13 @@ class _MainPageState extends State<MainPage> {
                     return Text('Error: ${snapshot.error}');
                   } else if (snapshot.hasData) {
                     List<Movie> movies = snapshot.data!;
-                    movies = movies
-                        .where((movie) =>
-                            movie.title
-                                ?.toLowerCase()
-                                .contains(searchQuery.toLowerCase()) ??
-                            false)
-                        .toList();
-                    movies.sort((a, b) =>
-                        (b.voteAverage ?? 0).compareTo(a.voteAverage ?? 0));
-                    movies = movies.take(4).toList();
+
+                    // Filter dan sort film berdasarkan rating tertinggi
+                    movies = movies.where((movie) => movie.title?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false).toList();
+                    movies.sort((a, b) => (b.voteAverage ?? 0).compareTo(a.voteAverage ?? 0));
+
+                    // Ambil 3 film pertama
+                    movies = movies.take(3).toList();
 
                     return ListView.builder(
                       shrinkWrap: true,
@@ -272,7 +235,7 @@ class _MainPageState extends State<MainPage> {
                                     Container(
                                       width: 150,
                                       child: Image.network(
-                                        "https://www.themoviedb.org/t/p/w500${movie.posterPath}",
+                                        "https://www.themoviedb.org/t/p/w220_and_h330_face${movie.posterPath}" ?? "",
                                         fit: BoxFit.cover,
                                       ),
                                     ),
@@ -280,8 +243,7 @@ class _MainPageState extends State<MainPage> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               movie.title ?? "",
@@ -315,18 +277,14 @@ class _MainPageState extends State<MainPage> {
                                                   Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DescPage(
-                                                              movie: movie),
+                                                      builder: (context) => DescPage(movie: movie),
                                                     ),
                                                   );
                                                 },
                                                 style: ElevatedButton.styleFrom(
                                                   primary: Colors.blue,
                                                   shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20.0),
+                                                    borderRadius: BorderRadius.circular(20.0),
                                                   ),
                                                   padding: EdgeInsets.symmetric(
                                                     horizontal: 15.0,
@@ -364,37 +322,6 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
-                    bottomNavigationBar: BottomNavigationBar(
-                backgroundColor: Colors.white,
-                items: [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.logout),
-                    label: 'Logout',
-                  ),
-                ],
-                onTap: (int index) {
-                  if (index == 0) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainPage()),
-                    );
-                  } else if (index == 1) {
-                    // Tambahkan fungsi onTap di sini
-                    _auth.signOut();
-                    // Perubahan: Menggunakan pushReplacement agar dapat kembali ke LoginPage
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const Login(),
-                      ),
-                    );
-                  }
-                },
-              ),
     );
   }
 }

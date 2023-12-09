@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/movie.dart';
-import 'package:mobile/pages/login.dart';
+import 'package:mobile/models/television.dart';
 import 'package:mobile/pages/main_page.dart';
-import 'package:mobile/pages/welcomescreen.dart';
+import 'package:mobile/pages/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DescPage extends StatefulWidget {
-  final Movie movie;
+  final Television television;
 
-  const DescPage({Key? key, required this.movie}) : super(key: key);
+  const DescPage({Key? key, required this.television}) : super(key: key);
 
   @override
   _DescPageState createState() => _DescPageState();
@@ -28,7 +27,7 @@ class _DescPageState extends State<DescPage> {
         child: Column(
           children: [
             Image.network(
-              "https://www.themoviedb.org/t/p/w500${widget.movie.posterPath}",
+              "https://www.themoviedb.org/t/p/w500${widget.television.posterPath}" ?? "",
               fit: BoxFit.cover,
             ),
             Row(
@@ -44,7 +43,7 @@ class _DescPageState extends State<DescPage> {
                     color: Colors.white38,
                     child: Center(
                       child: Text(
-                        widget.movie.title ?? "",
+                        widget.television.name ?? "",
                         style: TextStyle(fontSize: 17, color: Colors.white),
                       ),
                     ),
@@ -59,23 +58,23 @@ class _DescPageState extends State<DescPage> {
                 children: [
                   SizedBox(height: 30),
                   Text(
-                    "Original Name: ${widget.movie.originalTitle ?? ""}",
+                    "Original Name: ${widget.television.originalName ?? ""}",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    "Rating: ${widget.movie.voteAverage ?? ""}",
+                    "Rating: ${widget.television.voteAverage ?? ""}",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    "Language: ${widget.movie.original_language?.toUpperCase() ?? ""}",
+                    "Language: ${widget.television.original_language?.toUpperCase() ?? ""}",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    "Popularity: ${widget.movie.popularity ?? ""}",
+                    "Country: ${widget.television.originCountry ?? ""}",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    "Release Date: ${widget.movie.ReleaseDate ?? ""}",
+                    "First Air Date: ${widget.television.FirstAirDate ?? ""}",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   SizedBox(height: 20),
@@ -85,7 +84,7 @@ class _DescPageState extends State<DescPage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    widget.movie.overview ?? "",
+                    widget.television.overview ?? "",
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   SizedBox(height: 40,)
